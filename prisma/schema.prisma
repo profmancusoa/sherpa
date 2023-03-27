@@ -1,0 +1,18 @@
+// v 0.1 2023-03-27
+
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider = "sqlite"
+    url      = env("DATABASE_URL")
+}
+
+model Session {
+    id         Int      @id @default(autoincrement())
+    createdAt  DateTime @default(now())
+    utente     String   @unique
+    session_id String   @unique
+    scadenza   DateTime @default(now())
+}
