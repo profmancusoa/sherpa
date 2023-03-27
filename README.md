@@ -13,4 +13,4 @@ Same way sherpa file sharing make very easy to deliver files wherever you want
 - provide a simple to understand project for other people to experiment and learn
 - provide low traffic and small size file sharing
 
-Any support is more than welcom!!!
+Any support is more than welcome!!!
