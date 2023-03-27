@@ -1,7 +1,7 @@
 // import {
 // 	route_protect,
 // 	raise_error,
-// } from '../js/helper'; 
+// } from '../js/helper';
 import { redirect } from '@sveltejs/kit';
 // import { Logger } from '../js/logger';
 
@@ -11,7 +11,7 @@ import { redirect } from '@sveltejs/kit';
 // function catch_error(exception, type, code) {
 //     if(exception instanceof PrismaClientValidationError)
 //         logger.error(exception.message);
-//     else {  
+//     else {
 //         logger.error(JSON.stringify(exception));
 //         logger.error(exception.message);
 //         logger.error(exception.stack);
@@ -24,9 +24,8 @@ import { redirect } from '@sveltejs/kit';
 // }
 
 export async function load({ locals }) {
-    const session = locals.session;
+	const session = locals.session;
 	if (!session) {
 		throw redirect(302, '/login');
 	}
 }
-

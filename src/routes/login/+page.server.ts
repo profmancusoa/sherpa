@@ -7,7 +7,7 @@ import { Logger } from '../../js/logger';
 import { PrismaClientValidationError } from '@prisma/client/runtime';
 
 const logger: Logger = Logger.getInstance();
-const DB = new PrismaClient(); 
+const DB = new PrismaClient();
 
 export const load = async ({ locals }) => {
 	if (locals.session) throw redirect(302, '/');
@@ -41,13 +41,13 @@ export const actions = {
 			const session_id = crypto.randomUUID(); // id sessione
 			const form_data = await request.formData();
 			const jwt_token = form_data.get('token'); // google token da autenticare
-            const info_utente = await decode_JWT(jwt_token);
+			const info_utente = await decode_JWT(jwt_token);
 
 			// se utente non è verificato e non appartiene ad istituto agnelli errore
-			if (info_utente.hd != 'alba-robot.com' || 
-                !info_utente.email_verified) {
-				    logger.error("Tentativo di login ABUSIVO");
-				    throw error(401, 'Impossibile autenticare utente');
+			if (info_utente.hd != 'alba-robot.com' || !info_utente.email_verified) {
+				console.log('Tentativo di login ABUSIVO');
+				logger.error('Tentativo di login ABUSIVO');
+				throw error(401, 'Impossibile autenticare utente');
 			}
 
 			// rimuovo eventuali vecchie sessioni
@@ -60,7 +60,7 @@ export const actions = {
 				data: {
 					utente: <string>info_utente.email,
 					session_id: session_id,
-					scadenza: new Date(Date.now() + +SESSION_TIMEOUT),
+					scadenza: new Date(Date.now() + +SESSION_TIMEOUT)
 				}
 			});
 
@@ -76,12 +76,12 @@ export const actions = {
 				maxAge: Number(SESSION_TIMEOUT) / 1000
 			});
 		} catch (exception) {
-			if (exception instanceof PrismaClientValidationError)
-				logger.error(exception.message);
+			if (exception instanceof PrismaClientValidationError) logger.error(exception.message);
 			else {
 				logger.error(JSON.stringify(exception));
 				logger.error(exception.message);
 				logger.error(exception.stack);
+				throw error(401, 'Impossibile autenticare utente');
 			}
 		}
 		return { success: true };
