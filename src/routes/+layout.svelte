@@ -8,9 +8,8 @@
 </main>
 
 <style>
-	main {
+	/* main {
 		margin: 0rem;
-		border: 0px solid red;
 		padding: 0rem;
-	}
+	} */
 </style>
