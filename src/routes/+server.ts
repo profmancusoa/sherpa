@@ -1,8 +1,8 @@
 import { writeFileSync } from 'fs';
 import { redirect } from '@sveltejs/kit';
-import { json } from '@sveltejs/kit';
+import { PRIVATE_SHARED_DIR } from '$env/static/private';
 
-const BASE_DIR = "static/shared"
+// const BASE_DIR = "shared"; //"static/shared"
 
 const generate_fname = (ext) => {
     return (Math.random().toString(36).substring(2) + 
@@ -17,7 +17,8 @@ export async function POST({ request, url, locals }) {
     let gen_fname:string;
     const session = locals.session;
 	if (!session) {
-		throw redirect(302, '/login');
+        console.log("DOVREI ANDARE A LOGIN")
+		throw redirect(302, '/login');   
 	}
 
     try {
@@ -31,7 +32,7 @@ export async function POST({ request, url, locals }) {
         gen_fname = generate_fname(fext);
 
         console.log(`Saving file ${fname} with extension ${fext} for ${n_days} days and/or ${n_down} downalods`);
-        writeFileSync(`${BASE_DIR}/${gen_fname}`, file, 'base64');
+        writeFileSync(`${PRIVATE_SHARED_DIR}/${gen_fname}`, file, 'base64');
     } catch(e) {
         console.log(e);
         return new Response(JSON.stringify({error: 'cannot uplaod the file'}), { status: 500});
