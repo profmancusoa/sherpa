@@ -1,0 +1,28 @@
+// v 0.2 2023-05-30
+
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider = "sqlite"
+    url      = env("DATABASE_URL")
+}
+
+model Session {
+    id         Int      @id @default(autoincrement())
+    createdAt  DateTime @default(now())
+    utente     String   @unique
+    session_id String   @unique
+    scadenza   DateTime @default(now())
+}
+
+model File {
+    id                 Int      @id @default(autoincrement())
+    createdAt          DateTime @default(now())
+    upload_file_name   String
+    download_file_name String
+    expiration         DateTime @default(now())
+    max_downloads      Int
+    current_downloads  Int      @default(0)
+}
