@@ -1,8 +1,9 @@
 <script lang="ts">
 	import { set_input_value } from 'svelte/internal';
-    import Number from '../components/number.svelte';
+	import Number from '../components/number.svelte';
+	import { PUBLIC_BASE_URL } from '$env/static/public';
 
-    export let data;
+	export let data;
 	let is_loading: boolean = false;
 	let too_many_files: boolean = false;
 	let loaded_ok: boolean = false;
@@ -34,8 +35,8 @@
 			loaded_ok = false;
 			clear_mex(1000);
 			setTimeout(() => {
-				mex = `Your file can be dowloaded here: <br> http://localhost:5173/file/${uploaded_file.fname}`;
-				navigator.clipboard.writeText(`http://localhost:5173/file/${uploaded_file.fname}`);
+				mex = `Your file can be dowloaded here: <br> ${PUBLIC_BASE_URL}/file/${uploaded_file.fname}`;
+				navigator.clipboard.writeText(`${PUBLIC_BASE_URL}/file/${uploaded_file.fname}`);
 				dismiss = true;
 			}, 1000);
 		}
@@ -58,7 +59,6 @@
 	};
 
 	async function uploadFunction(fname, fext, base64) {
-		console.log('UPLAOD FILE START:');
 		is_loading = true;
 		loaded_ok = false;
 		loaded_error = false;
@@ -81,11 +81,9 @@
 
 		is_loading = false;
 		if (res.ok) {
-			console.log('TUTTO OK');
 			uploaded_file = await res.json();
 			loaded_ok = true;
 		} else {
-			console.log('ERRORI NEL UPLOAS FILE');
 			loaded_error = true;
 		}
 	}
@@ -95,24 +93,19 @@
 	}
 
 	async function dropping(ev) {
-		console.log('FILE DROPPED:', ev);
 		ev.preventDefault();
 
 		let file_items = [...ev.dataTransfer.items];
 
 		if (file_items.length > 1) {
-			console.log('Error: too many files');
 			too_many_files = true;
 			return;
 		}
 
 		is_loading = true;
 
-		console.log('FILE DA CATRICRE:', file_items);
-
 		let file_handle = file_items[0];
 		if (file_handle.kind != 'file') {
-			console.log('Error non stai facendo uiplaod di un file');
 			return;
 		}
 
@@ -135,22 +128,22 @@
 		<div class="cell C" />
 		<div class="cell D">
 			<p class="text">How long the file will last?</p>
-            <Number bind:number={n_days} min=1 max=5 suffix="d"/>
+			<Number bind:number={n_days} min="1" max="30" suffix="d" />
 		</div>
 
 		<div class="cell E">
 			<div id="drop_zone" on:drop={(e) => dropping(e)} on:dragover={(e) => drag(e)}>
-                {#if !is_loading}
-				    <img src="./img/upload.png" class="picture" alt="upload"/>
-                {:else}
-                    <img src="./img/upload-load.png" class="picture" alt="upload"/>
-                {/if}
+				{#if !is_loading}
+					<img src="./img/upload.png" class="picture" alt="upload" />
+				{:else}
+					<img src="./img/upload-load.png" class="picture" alt="upload" />
+				{/if}
 			</div>
 		</div>
 
 		<div class="cell F">
 			<p class="text">How many downloads allowed?</p>
-            <Number bind:number={n_down} min=1 max=50 />
+			<Number bind:number={n_down} min="1" max="50" />
 		</div>
 		<div class="cell H">
 			<p class="text-reverse">{@html mex}</p>
@@ -165,9 +158,8 @@
 
 <style>
 	main {
-        background-image: url('/img/background.png');
-        background-size: cover;
-        /* background-position: center; */
+		background-image: url('/img/background.png');
+		background-size: cover;
 		border: 0px solid red;
 		background-color: white;
 		height: 99vh;
@@ -185,7 +177,7 @@
 	}
 
 	.cell {
-		border:0px solid red;
+		border: 0px solid red;
 	}
 
 	.picture {
@@ -195,21 +187,17 @@
 
 	.text {
 		font-size: 1.6rem;
-		/* color: #003244; */
-        color: white;
+		color: white;
 		font-weight: bold;
-        /* text-shadow: 4px 4px 6px #F3F1E9; */
-        text-shadow: 4px 4px 6px black;
+		text-shadow: 4px 4px 6px black;
 	}
 
-    .text-reverse {
+	.text-reverse {
 		font-size: 1.6rem;
-		/* color: #003244; */
-        color: #3E5A5E;
+		color: #3e5a5e;
 		font-weight: bold;
-        /* text-shadow: 4px 4px 6px #F3F1E9; */
-        text-shadow: 4px 4px 6px white;
-        text-align: center;
+		text-shadow: 4px 4px 6px white;
+		text-align: center;
 	}
 
 	button {
@@ -225,8 +213,8 @@
 
 	button:hover,
 	.button-selected {
-		color: #3E5A5E;
-		border: 5px solid #3E5A5E;
+		color: #3e5a5e;
+		border: 5px solid #3e5a5e;
 	}
 
 	.B {
@@ -275,11 +263,4 @@
 		border: 0px solid blue;
 		width: 70%;
 	}
-
-    /* #drop_zone:hover{
-        background-color: rgba(255, 255, 255,.3);
-    } */
-
-
-
 </style>

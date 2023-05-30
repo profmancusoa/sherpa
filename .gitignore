@@ -11,3 +11,4 @@ vite.config.ts.timestamp-*
 prisma/SHERPA.db
 sherpa.log
 shared/
+SHERPA_BUILD/

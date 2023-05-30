@@ -45,7 +45,6 @@ export const actions = {
 
 			// se utente non è verificato e non appartiene ad istituto agnelli errore
 			if (info_utente.hd != 'alba-robot.com' || !info_utente.email_verified) {
-				console.log('Tentativo di login ABUSIVO');
 				logger.error('Tentativo di login ABUSIVO');
 				throw error(401, 'Impossibile autenticare utente');
 			}
