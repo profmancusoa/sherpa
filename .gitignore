@@ -10,5 +10,5 @@ vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 prisma/SHERPA.db
 sherpa.log
-shared/
 SHERPA_BUILD/
+.env.local

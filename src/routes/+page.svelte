@@ -1,9 +1,10 @@
 <script lang="ts">
-	import { set_input_value } from 'svelte/internal';
+	import axios from 'axios';
 	import Number from '../components/number.svelte';
 	import { PUBLIC_BASE_URL } from '$env/static/public';
-
-	export let data;
+    import Progress from '../components/progress.svelte';
+	
+    export let data;
 	let is_loading: boolean = false;
 	let too_many_files: boolean = false;
 	let loaded_ok: boolean = false;
@@ -14,6 +15,8 @@
 	let n_down: number = 1;
 	let mex: string = '';
 	let uploaded_file: string;
+    let current_bytes: number = 0;
+	let total_bytes: number = 0;
 
 	const clear_mex = (delay) => {
 		setTimeout(() => (mex = ''), delay);
@@ -55,6 +58,8 @@
 		loaded_ok = false;
 		loaded_error = false;
 		dismiss = false;
+        current_bytes = 0;
+		total_bytes = 0;
 		mex = '';
 	};
 
@@ -64,24 +69,25 @@
 		loaded_error = false;
 
 		const b64_data = base64.split(',');
-		const res = await fetch(`/`, {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json',
-				Accept: 'application/json'
-			},
-			body: JSON.stringify({
+        total_bytes = b64_data[1].length + Math.ceil(b64_data[1].length / 20);
+
+		const res = await axios.request({
+			method: 'post',
+			url: '/',
+			data: JSON.stringify({
 				fname: fname,
 				fext: fext,
 				file: b64_data[1],
 				n_days: n_days,
 				n_down: n_down
-			})
+			}),
+			onUploadProgress: (p) => { current_bytes = p.loaded; }
 		});
 
 		is_loading = false;
-		if (res.ok) {
-			uploaded_file = await res.json();
+		if (res.status == 200) {
+			current_bytes = total_bytes;
+			uploaded_file = res.data;
 			loaded_ok = true;
 		} else {
 			loaded_error = true;
@@ -134,9 +140,9 @@
 		<div class="cell E">
 			<div id="drop_zone" on:drop={(e) => dropping(e)} on:dragover={(e) => drag(e)}>
 				{#if !is_loading}
-					<img src="./img/upload.png" class="picture" alt="upload" />
+					<img src="./img/share_upload.png" class="picture" alt="upload" />
 				{:else}
-					<img src="./img/upload-load.png" class="picture" alt="upload" />
+					<img src="./img/share_upload-load.png" class="picture" alt="upload" />
 				{/if}
 			</div>
 		</div>
@@ -147,7 +153,13 @@
 		</div>
 		<div class="cell H">
 			<p class="text-reverse">{@html mex}</p>
-			{#if dismiss}
+			{#if is_loading}
+				<Progress 
+                    current={current_bytes}
+                    total={total_bytes}
+                />
+			{/if}
+            {#if dismiss}
 				<div>
 					<button on:click={reset_status}>OK</button>
 				</div>
@@ -158,7 +170,7 @@
 
 <style>
 	main {
-		background-image: url('/img/background.png');
+		background-image: url('/img/share_background.png');
 		background-size: cover;
 		border: 0px solid red;
 		background-color: white;

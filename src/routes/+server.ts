@@ -23,12 +23,14 @@ export async function POST({ request, url, locals }) {
 	}
 
 	try {
-		const raw_data = await request.json();
+		logger.info("Start file upload request");
+        const raw_data = await request.json();
 		const file = raw_data['file'];
 		const fname = raw_data['fname'];
 		const fext = raw_data['fext'];
 		const n_days = raw_data['n_days'];
 		const n_down = raw_data['n_down'];
+        logger.info(`File uploaded is ${fname}.${fext}`);
 
 		gen_fname = generate_fname(fext);
 
@@ -46,6 +48,7 @@ export async function POST({ request, url, locals }) {
 			}
 		});
 	} catch (e) {
+        logger.error(JSON.stringify(e));
 		return new Response(JSON.stringify({ error: 'cannot uplaod the file' }), { status: 500 });
 	}
 	return new Response(JSON.stringify({ fname: gen_fname }), { status: 200 });

@@ -4,7 +4,6 @@ import { Blob } from 'buffer';
 import { error } from '@sveltejs/kit';
 import { PrismaClient } from '@prisma/client';
 import { Logger } from '../../../js/logger';
-
 const DB = new PrismaClient();
 const logger:Logger = Logger.getInstance();
 
@@ -20,7 +19,7 @@ export async function GET({ request, url, locals }) {
 		});
 
 		if (file_entry.length != 1) {
-            logger.error(`zero or too many entries in the DB for ${fname}`);
+            logger.error(`file [${fname}] not found in the DB`);
 			throw error(404, 'Not found');
 		}
 		file_entry = file_entry[0];
@@ -39,6 +38,7 @@ export async function GET({ request, url, locals }) {
 		const file_blob = new Blob([buffer]);
 		const header = new Headers();
 		header.append('fname', file_entry.upload_file_name);
+        header.append('Content-Length', String(file_blob.size));
 		const options = { status: 200, headers: header };
 
 		//update file entry in DB
@@ -53,6 +53,7 @@ export async function GET({ request, url, locals }) {
 		return new Response(file_blob, options);
 	} catch (e) {
         logger.error(JSON.stringify(e));
+        logger.error(e);
 		throw error(404, 'Not found');
 	}
 }
